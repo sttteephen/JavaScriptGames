@@ -1,0 +1,59 @@
+{% extends 'javascriptgames/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'javascriptgames/css/memorygame.css' %}">
+
+<h1 class="p-2">Memory Game</h1>
+<p class="p-1">Try and match the icon pairs. The lower score the better!</p>
+<div class="row">
+    <div class="box col" id="square1" onclick="reveal(this)"><span>X</span></div>
+    <div class="box col" id="square2" onclick="reveal(this)"><span>X</span></div>
+    <div class="box col" id="square3" onclick="reveal(this)"><span>X</span></div>
+    <div class="box col" id="square4" onclick="reveal(this)"><span>X</span></div>
+</div>
+<div class="row">
+    <div class="box col" id="square5" onclick="reveal(this)"><span>X</span></div>
+    <div class="box col" id="square6" onclick="reveal(this)"><span>X</span></div>
+    <div class="box col" id="square7" onclick="reveal(this)"><span>X</span></div>
+    <div class="box col" id="square8" onclick="reveal(this)"><span>X</span></div>
+</div>
+<div class="row">
+    <div class="box col" id="square9" onclick="reveal(this)"><span>X</span></div>
+    <div class="box col" id="square10" onclick="reveal(this)"><span>X</span></div>
+    <div class="box col" id="square11" onclick="reveal(this)"><span>X</span></div>
+    <div class="box col" id="square12" onclick="reveal(this)"><span>X</span></div>
+</div>
+<div class="row">
+    <div class="box col" id="square13" onclick="reveal(this)"><span>X</span></div>
+    <div class="box col" id="square14" onclick="reveal(this)"><span>X</span></div>
+    <div class="box col" id="square15" onclick="reveal(this)"><span>X</span></div>
+    <div class="box col" id="square16" onclick="reveal(this)"><span>X</span></div>
+</div>
+<div class="row">
+    <div class="box col" id="square17" onclick="reveal(this)"><span>X</span></div>
+    <div class="box col" id="square18" onclick="reveal(this)"><span>X</span></div>
+    <div class="box col" id="square19" onclick="reveal(this)"><span>X</span></div>
+    <div class="box col" id="square20" onclick="reveal(this)"><span>X</span></div>
+</div>
+<div class="row">
+    <div class="col fs-1 p-3 score-div">
+        <p id="score">Score: 0</p>
+    </div>
+    <div id="you-won" class="col p-3 invisible">
+        <p class="fs-1">Well Done!</p>
+    </div>
+    <div class="p-3 col">
+        <button class="btn btn-success mt-2 fs-5" onclick="resetBoard()">New Game</button>
+    </div>
+</div>
+
+{% include 'javascriptgames/form.html' with game_id=2 %}
+
+{% load static %}
+<script src="{% static 'javascriptgames/js/memorygame.js' %}"></script>
+
+{% include 'javascriptgames/scores.html' %}
+
+{% endblock %}

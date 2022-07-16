@@ -1,0 +1,27 @@
+.container {
+    padding: 0px;
+}
+
+#game-info {
+    background-color: black;
+    color: white;
+    margin: 0px;
+    width: 700px;
+    margin: auto;
+    font-family: 'Stalinist One', cursive;
+    padding: 10px;
+}
+
+#game {
+    background-color: black;
+    width: 700px;
+    padding: 0;
+}
+
+.btn {
+    width: 60px;
+}
+
+#btns {
+    width: 700px;
+}

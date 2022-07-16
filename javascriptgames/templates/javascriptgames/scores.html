@@ -1,0 +1,21 @@
+<div class="scores mt-5">
+    <h3>Top Scores</h3>
+    {% if scores %}
+    <table class="mx-auto table table-dark table-striped">
+        <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">Score</th>
+            <th scope="col">Name</th>
+        </tr>
+        {% for score in scores %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ score.score }}</td>
+            <td>{{ score.player_name }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No scores are available.</p>
+    {% endif %}
+</div>

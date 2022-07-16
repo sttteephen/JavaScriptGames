@@ -1,0 +1,66 @@
+{% extends 'javascriptgames/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'javascriptgames/css/rpstest.css' %}">
+
+<div class="fs-3">
+
+    <h1 class="p-2 mb-5">Rock Paper Scissors</h1>
+
+
+    <div class="row justify-content-center">
+
+        <div class="col">
+            <p>You Chose:
+            <div id="player-choice" class="choices"></div>
+            </p>
+        </div>
+
+        <div class="col">
+            <p>Computer Chose:
+            <div id="computer-choice" class="choices"></div>
+            </p>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div id="winner-div" class="py-3">
+            <p>The Winner Is: <span id="winner"></span></p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            Scores
+            <span id="player-wins">0</span>
+            :
+            <span id="computer-wins">0</span>
+        </div>
+    </div>
+</div>
+
+<!-- buttons group -->
+<div class="row justify-content-center my-5 mx-5">
+
+    <div class="col-sm-6">
+        <div class="btn-group" role="group" aria-label="playerchoices">
+            <button type="button" class="btn btn-dark border px-4 fs-3" aria-label="rock" onclick="choose(0)">
+                <i class="fas fa-hand-rock"></i>
+            </button>
+            <button type="button" class="btn btn-dark border px-4 fs-3" aria-label="paper" onclick="choose(1)">
+                <i class="fas fa-hand-paper"></i>
+            </button>
+            <button type="button" class="btn btn-dark border px-4 fs-3" aria-label="scissors" onclick="choose(2)">
+                <i class="fas fa-hand-peace"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+{% load static %}
+<script src="{% static 'javascriptgames/js/rps.js' %}"></script>
+
+{% endblock %}

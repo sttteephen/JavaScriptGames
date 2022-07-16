@@ -1,0 +1,61 @@
+{% extends 'javascriptgames/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'javascriptgames/css/whacamole.css' %}">
+
+<div class="container text-center justify-content-center mt-3 p-3">
+
+    <h1 class="p-2">Whac-A-Mole</h1>
+    <p class="p-1">Whac as many faces as you can within the time limit. Click the middle face to start.</p>
+
+    <div id="holes" class="mx-auto">
+        <div class="row">
+            <div class="col border border-dark hole" id="hole1" onclick="whacHole(this)"><span class="">X</span>
+            </div>
+            <div class="col border border-dark hole" id="hole2" onclick="whacHole(this)"><span class="">X</span>
+            </div>
+            <div class="col border border-dark hole" id="hole3" onclick="whacHole(this)"><span class="">X</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col border border-dark hole" id="hole4" onclick="whacHole(this)"><span class="">X</span>
+            </div>
+            <div class="col border border-dark hole" id="hole5" onclick="whacHole(this)"><span class="">X</span>
+            </div>
+            <div class="col border border-dark hole" id="hole6" onclick="whacHole(this)"><span class="">X</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col border border-dark hole" id="hole7" onclick="whacHole(this)"><span class="">X</span>
+            </div>
+            <div class="col border border-dark hole" id="hole8" onclick="whacHole(this)"><span class="">X</span>
+            </div>
+            <div class="col border border-dark hole" id="hole9" onclick="whacHole(this)"><span class="">X</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col fs-3 p-2 score-div text-start">
+                <p id="score"></p>
+            </div>
+            <div class="col  fs-3 p-2 ">
+                <p id="time"></p>
+            </div>
+            <div class="p-2 col text-end">
+                <button class="btn btn-success fs-5" onclick="resetHoles()">New Game</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% include 'javascriptgames/form.html' with game_id=3 %}
+
+{% include 'javascriptgames/scores.html' %}
+
+{% load static %}
+<script src="{% static 'javascriptgames/js/whacamole.js' %}"></script>
+
+{% endblock %}

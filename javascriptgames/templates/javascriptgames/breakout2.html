@@ -1,0 +1,23 @@
+{% extends 'javascriptgames/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'javascriptgames/breakout.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'javascriptgames/base.css' %}">
+
+<h1 class="p-2">Breakout</h1>
+<p class="p-1">Try and break all the blocks. Click to start.</p>
+
+<canvas id="canvas" width="400" height="650">
+</canvas>
+
+<p id="score" class="fs-3">Score: 0</p>
+
+{% include 'javascriptgames/scores.html' %}
+
+
+{% load static %}
+<script src="{% static 'javascriptgames/breakout.js' %}"></script>
+
+{% endblock %}

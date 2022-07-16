@@ -1,0 +1,12 @@
+body {
+    background-color: #A4A8D1;
+}
+
+.scores,
+table {
+    font-family: 'Stalinist One', cursive;
+}
+
+th {
+    width: 100px;
+}

@@ -1,0 +1,17 @@
+<form action="{% url 'games:newscore' game_id %}" method="post">
+    {% csrf_token %}
+    <div class="row justify-content-end">
+        <div class="col">
+            <input type="text" name="score" id="score-input" disabled class="form-control" placeholder="Score">
+        </div>
+        <div class="col">
+            <input type="text" name="username" id="username-input" maxlength="3" placeholder="AAA" class="form-control">
+        </div>
+        <div class="col">
+            <input type="submit" value="Submit" class="btn btn-secondary" id="submit-input" disabled>
+        </div>
+    </div>
+</form>
+
+{% load static %}
+<script src="{% static 'javascriptgames/js/forms.js' %}"></script>

@@ -1,0 +1,15 @@
+{% extends 'javascriptgames/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'javascriptgames/css/index.css' %}">
+
+<a href="{% url 'games:rps' %}">Rock Paper Scissors</a><br>
+<a href="{% url 'games:memorygame' %}">Memory Game</a><br>
+<a href="{% url 'games:whacamole' %}">Whac-A-Mole</a><br>
+<a href="{% url 'games:breakout' %}">Breakout</a>
+
+{% include 'javascriptgames/scores.html' %}
+
+{% endblock %}

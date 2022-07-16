@@ -1,0 +1,5 @@
+- breakout game over sound is wrong
+- fix whacamole end game
+- disable forms when new game started
+- fix whacamole scores width
+- work on index css

@@ -1,0 +1,352 @@
+{% extends 'javascriptgames/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'javascriptgames/css/breakoutphaser.css' %}">
+<script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+
+<h1 class="p-2">Breakout</h1>
+<p class="p-1">Break as many blocks as you can. Use the arrows keys to move.</p>
+
+<div class="row fs-6" id="game-info">
+    <div class="col">LEVEL:&nbsp;<span id="level-text">1</span></div>
+    <div class="col">LIFES:&nbsp;<span id="lives-text">3</span></div>
+    <div class="col">SCORE:&nbsp;<span id="score-text">0</span> </div>
+</div>
+
+<div class="row justify-content-center">
+    <div id="game">
+        <script type="text/javascript">
+
+            var config = {
+                type: Phaser.AUTO,
+                width: 700,
+                height: 1000,
+                physics: {
+                    default: 'arcade',
+                },
+                scene: {
+                    preload: preload,
+                    create: create,
+                    update: update
+                },
+                scale: {
+                    parent: 'game',
+                    autoCenter: Phaser.Scale.CENTER_BOTH
+                }
+            }
+
+            var score = 0;
+            var scoreText;
+            var level = 1;
+            var lives = 3;
+            var countDownInterval;
+
+            var ball_speedy = 500;
+            var ball_speedx = 200;
+            var INIT_BALLX = 350;
+            var INIT_BALLY = 300;
+            var PADDLE_SPEED = 350;
+            var PADDLE_Y = 900;
+
+            var game = new Phaser.Game(config);
+
+            function preload() {
+                this.load.image('paddle', '{% static "javascriptgames/assets/paddle.png" %}');
+                this.load.image('blue block', '{% static "javascriptgames/assets/block_blue.png" %}');
+                this.load.image('green block', '{% static "javascriptgames/assets/block_green.png" %}');
+                this.load.image('red block', '{% static "javascriptgames/assets/block_red.png" %}');
+                this.load.image('yellow block', '{% static "javascriptgames/assets/block_yellow.png" %}');
+                this.load.image('pink block', '{% static "javascriptgames/assets/block_pink.png" %}');
+                this.load.image('orange block', '{% static "javascriptgames/assets/block_orange.png" %}');
+                this.load.image('ball', '{% static "javascriptgames/assets/ball.png" %}');
+                this.load.audio('break', ['{% static "javascriptgames/assets/break_block.mp3" %}']);
+                this.load.audio('gameOver', ['{% static "javascriptgames/assets/break_block.mp3" %}']);
+                this.load.audio('reset', ['{% static "javascriptgames/assets/reset.mp3" %}']);
+                this.load.audio('paddleHit', ['{% static "javascriptgames/assets/paddleHit.mp3" %}']);
+                this.load.audio('edgeHit', ['{% static "javascriptgames/assets/paddleEdgeHit.mp3" %}']);
+                this.load.audio('countdown', ['{% static "javascriptgames/assets/count.mp3" %}']);
+                this.load.audio('finalCount', ['{% static "javascriptgames/assets/finalCount.mp3" %}']);
+            }
+
+            function create() {
+
+                //levelText = this.add.text(16, 16, 'LEVEL: 1', { fontSize: '25px', fill: '#FFFF' });
+                //livesText = this.add.text(250, 16, 'LIVES: 3', { fontSize: '25px', fill: '#FFFF' });
+                //scoreText = this.add.text(500, 16, 'SCORE: 0', { fontSize: '25px', fill: '#FFFF' });
+                gameOverText = this.add.text(75, 300, '', { fontSize: '96px', fill: '#FFFF' });
+                timerText = this.add.text(325, 400, '', { fontSize: '96px', fill: '#FFFF' })
+
+                breakSound = this.sound.add('break', { loop: false });
+                gameOverSound = this.sound.add('gameOver', { loop: false });
+                resetSound = this.sound.add('reset', { loop: false });
+                paddleHitSound = this.sound.add('paddleHit', { loop: false });
+                edgeHitSound = this.sound.add('edgeHit', { loop: false });
+                countSound = this.sound.add('countdown', { loop: false });
+                finalCountSound = this.sound.add('finalCount', { loop: false });
+
+                effectsConfig = {
+                    mute: true
+                }
+
+                // create paddle sprite and get input for moving it
+                paddle = this.physics.add.sprite(350, PADDLE_Y, 'paddle')
+                paddle.setCollideWorldBounds(true);
+                cursors = this.input.keyboard.createCursorKeys();
+
+                blocks = this.physics.add.staticGroup();
+
+                ball = this.physics.add.sprite(350, 500, 'ball');
+                ball.setCollideWorldBounds(true);
+                ball.body.onWorldBounds = true;
+                ball.setBounce(1);
+
+                this.physics.world.on('worldbounds', ballHitWall);
+                this.physics.add.collider(paddle, ball, bounceBallPaddle, null, this);
+                this.physics.add.collider(blocks, ball, breakBlock, null, this);
+
+                resetBlocks();
+                countdown();    // start countdown to first level
+            }
+
+            // move paddle with player input
+            function update() {
+                if (cursors.left.isDown) {
+                    paddle.setVelocityX(-PADDLE_SPEED);
+                }
+                else if (cursors.right.isDown) {
+                    paddle.setVelocityX(PADDLE_SPEED);
+                }
+                else {
+                    paddle.setVelocityX(0);
+                }
+            }
+
+            function updateScore() {
+                //scoreText.setText('SCORE: ' + score);
+                document.getElementById('score-text').textContent = score;
+            }
+
+            function updateLevel() {
+                //levelText.setText('Level: ' + level);
+                document.getElementById('level-text').textContent = level;
+            }
+
+            function updateLives() {
+                //livesText.setText("LIVES: " + lives)
+                document.getElementById('lives-text').textContent = lives;
+            }
+
+            // check if ball has hit bottom wall
+            function ballHitWall() {
+                // check if ball is below paddle
+                if (ball.y > 950) {
+                    // take one life, check if game is over
+                    lives--;
+                    updateLives();
+                    if (lives == 0) {
+                        gameOver();
+                    } else {
+                        countdown();
+                    }
+                }
+            }
+
+            // countdown the start of a new level
+            function countdown() {
+                resetSound.play(effectsConfig);
+
+                // place ball in intial positon with no movement
+                ball.x = INIT_BALLX;
+                ball.y = INIT_BALLY;
+                ball.setVelocityX(0);
+                ball.setVelocityY(0);
+
+                // decrement countdown and update label every second 
+                let countdownTime = 3;
+                countDownInterval = setInterval(() => {
+                    timerText.setText(countdownTime)
+
+                    if (countdownTime == 0) {
+                        finalCountSound.play(effectsConfig);
+                        timerText.setText("");
+                        startBall();
+                        clearInterval(countDownInterval);
+                    } else {
+                        countSound.play(effectsConfig);
+                        countdownTime--;
+                    }
+
+                }, 1000)
+            }
+
+            // setup a new game
+            function resetGame() {
+                // reset initial values 
+                level = 1;
+                lives = 3;
+                score = 0;
+
+                ball_speedy = 500;
+                ball_speedx = 200;
+
+                gameOverText.setText('');
+                updateLevel();
+                updateLives();
+                updateScore();
+
+                if (countDownInterval) { clearInterval(countDownInterval) };
+                resetBlocks()
+                countdown();
+            }
+
+            // setup the next level
+            function nextLevel() {
+                resetBlocks();  // get new group of blocks 
+
+                // increment level count
+                level++;
+                updateLevel();
+
+                // increase ball speed
+                ball_speedy += 50;
+                ball_speedx += 25;
+
+                // start countdown to new level
+                countdownTime = 3;
+                countdown(true);
+            }
+
+            // display game over screen
+            function gameOver() {
+                // stop ball movement
+                ball.setVelocityX(0);
+                ball.setVelocityY(0);
+                // display text and play sound
+                gameOverText.setText('GAME OVER');
+                gameOverSound.play(effectsConfig);
+            }
+
+            // place new set of blocks on screen
+            function resetBlocks() {
+
+                // remove all blocks from blocks group
+                let currentBlocks = blocks.getChildren();
+                for (let b = currentBlocks.length - 1; b >= 0; b--) {
+                    currentBlocks[b].destroy();
+                }
+
+                // create blocks and place on screen, each block is 100px with 14px space either side
+                let blockNames = ['blue block', 'green block', 'red block', 'yellow block', 'pink block', 'orange block'];
+                let y = 100;
+                for (let name in blockNames) {
+                    for (let x = 64; x < 700; x += 100 + 14) {
+                        blocks.create(x, y, blockNames[name]);
+                    }
+                    y += 29;
+
+                }
+            }
+
+            // start the ball moving in a random direction
+            function startBall() {
+                // choose left or right
+                let xDirection = [1, -1]
+                ball.setVelocityX((ball_speedx / 2) * (xDirection[Math.floor(Math.random() * 2)]));
+                ball.setVelocityY(ball_speedy);
+            }
+
+            // handle ball collision with block
+            function breakBlock(ball, block) {
+                // increase score
+                score += 10;
+                updateScore();
+                breakSound.play(effectsConfig);
+
+                block.destroy();;  // remove block from screen
+
+                // check if all blocks are gone
+                if (blocks.countActive(true) === 0) {
+                    nextLevel();
+                }
+            }
+
+            // calculate balls new direction and velocity on collision with paddle
+            function bounceBallPaddle(paddle, ball) {
+
+                let edge = false;
+                // if x velocity of ball is slow set back to initial x velocity
+                if (ball.body.velocity.x < 10 && ball.body.velocity.x > -10) {
+                    let xDirection = [1, -1]
+                    ball.setVelocityX((ball_speedx) * (xDirection[Math.floor(Math.random() * 2)]));
+                }
+                // ball hits middle - reduct x velocity, same diretion
+                else if (ball.x > paddle.x - 10 && ball.x < paddle.x + 10) {
+                    ball.setVelocityX(ball_speedx * 0.5);
+                }
+                else if (ball.body.velocity.x >= 0) {
+                    // ball came from left 
+                    if (ball.x < paddle.x - 80) {
+                        // ball hits left edge - defelect and increase velocity
+                        edge = true;
+                        ball.setVelocityX(-ball_speedx * 2.5);
+                    }
+                    else if (ball.x < paddle.x) {
+                        // ball hits left side - deflect, same velocity
+                        ball.setVelocityX(-ball_speedx);
+                    }
+
+                } else {
+                    // ball came from right 
+                    if (ball.x > paddle.x + 80) {
+                        // ball hits right edge - deflect and increase velocity
+                        edge = true;
+                        ball.setVelocityX(ball_speedx * 3);
+                    }
+                    else if (ball.x > paddle.x) {
+                        // ball hits right side - deflect
+                        ball.setVelocityX(ball_speedx);
+                    }
+                }
+
+                // play different sound depending where ball hits, edge of other part
+                if (edge) {
+                    edgeHitSound.play(effectsConfig);
+                } else {
+                    paddleHitSound.play(effectsConfig);
+                }
+
+                // change balls y direction, reset paddle position
+                ball.setVelocityY(-ball_speedy);
+                paddle.setVelocityY(0);
+                paddle.y = 900;
+            }
+
+            // toggle sound effects mute
+            function toggleAudio() {
+                volumeBtn = document.getElementById('mute');
+                if (effectsConfig.mute) {
+                    effectsConfig.mute = false
+                    volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>'
+                }
+                else {
+                    effectsConfig.mute = true
+                    volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>'
+                };
+            }
+
+        </script>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div id="btns" class="mt-2">
+        <button onclick="toggleAudio()" class="btn btn-primary fs-4 me-2" id="mute"><i
+                class="fas fa-volume-mute"></i></button>
+        <button onclick="resetGame()" class="btn btn-primary fs-4"><i class="fas fa-redo-alt"></i></button>
+    </div>
+</div>
+
+{% include 'javascriptgames/scores.html' %}
+
+{% endblock %}
