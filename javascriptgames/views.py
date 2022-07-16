@@ -1,11 +1,9 @@
-from curses.ascii import HT
-from urllib import request
 from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Score, Game
 
-# Create your views here.
+
 def home(request):
     scores = Score.objects.all().order_by("-score")
     return render(request, "javascriptgames/index.html", {"scores": scores})

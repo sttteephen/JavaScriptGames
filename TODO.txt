@@ -3,3 +3,4 @@
 - disable forms when new game started
 - fix whacamole scores width
 - work on index css
+- index scores should be top score for each game

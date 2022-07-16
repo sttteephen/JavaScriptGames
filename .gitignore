@@ -1,0 +1,7 @@
+.DS_Store
+
+settings.py
+
+__pycache__/
+
+TODO.txt
